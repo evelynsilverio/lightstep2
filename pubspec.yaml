@@ -1,0 +1,27 @@
+name: ligth_step_app
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  animated_text_kit: ^4.2.3
+  flutter:
+    sdk: flutter
+  flutter_svg: ^2.0.9
+  lucide_icons: ^0.255.0
+  flutter_colorpicker: ^1.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/img/logo.png
+    - assets/img/logo.svg
+
