@@ -15,7 +15,7 @@ class _TabBarScreenState extends State<TabBarScreen> {
   int _selectedIndex = 0; // Mantiene el índice de la pestaña seleccionada
 
   final List<Widget> _screens = [
-    const Inicio(),
+    Inicio(),
     const Personalizacion(),
     const ConsumoScreen(),
     const Perfil(),
