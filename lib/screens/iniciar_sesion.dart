@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-// import 'package:flutter_application_1/appbar.dart';
-// import 'package:flutter_application_1/scaffold_con_degradado.dart';
-// import 'package:flutter_application_1/screens/inicio.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:ligth_step_app/screens/encendido.dart';
 import 'package:ligth_step_app/screens/inicio.dart';
-import 'package:ligth_step_app/widgets/appbar.dart';
 import 'package:ligth_step_app/widgets/scaffold_con_degradado.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -22,7 +18,6 @@ class _IniciarSesionState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return ScaffoldConDegradado(
-      appBar: const AppbarStyle(title: "Iniciar Sesión"),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30),

@@ -13,6 +13,8 @@ dependencies:
   flutter_svg: ^2.0.9
   lucide_icons: ^0.255.0
   flutter_colorpicker: ^1.1.0
+  firebase_core: ^3.12.1
+  cloud_firestore: ^5.6.5
 
 dev_dependencies:
   flutter_test:
@@ -25,7 +27,6 @@ flutter:
     - assets/img/logo.png
     - assets/img/imagen.png
     - assets/img/descarga1.png
-    - assets/img/des.gif
     - assets/img/desc.gif
     - assets/img/logo.svg
 
