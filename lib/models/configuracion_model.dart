@@ -1,54 +1,46 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 class ConfiguracionModel {
-  final String id;
-  final DocumentReference? dispositivoRef;
-  final String color;
+  final Map<String, dynamic> color; // Guardamos como {r, g, b}
   final String efecto;
-  final String nombre;
   final int opacidad;
-  final DocumentReference? usuarioRef;
+  final String estado;
+  final DateTime fecha;
 
   ConfiguracionModel({
-    required this.id,
-    required this.dispositivoRef,
     required this.color,
     required this.efecto,
-    required this.nombre,
     required this.opacidad,
-    required this.usuarioRef,
+    required this.estado,
+    required this.fecha,
   });
 
-  // convertir un model a un map
-  // cuando se inserta informacion desde la app
+  // Convertir modelo a mapa para Firestore
   Map<String, dynamic> toMap() {
     return {
-      // 'id': id,
-      'dispositivo_ref': dispositivoRef,
-      'color': color,
+      'color': color, // Se guarda como { "r": 255, "g": 87, "b": 51 }
       'efecto': efecto,
-      'nombre': nombre,
       'opacidad': opacidad,
-      'usuario_ref': usuarioRef,
+      'estado': estado,
+      'fecha': Timestamp.fromDate(fecha),
     };
   }
 
-  // crear un model desde un documentoSnapshot
-  // cuando se trae la info de Firebase
+  // Crear un modelo desde un documento de Firestore
   factory ConfiguracionModel.fromDocumentSnapshot(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>? ?? {};
 
     return ConfiguracionModel(
-      id: doc.id,
-      dispositivoRef: data['dispositivo_ref'] as DocumentReference?,
-      color: data['color'] ?? 'Sin color',
+      color: data['color'] as Map<String, dynamic>? ??
+          {"r": 255, "g": 255, "b": 255}, // Blanco por defecto
       efecto: data['efecto'] ?? 'Sin efecto',
-      nombre: data['nombre'] ?? 'Sin nombre',
+      estado: data['estado'] ?? 'Sin estado',
+      fecha: (data['fecha'] is Timestamp)
+          ? (data['fecha'] as Timestamp).toDate()
+          : DateTime.now(),
       opacidad: (data['opacidad'] is int)
           ? data['opacidad'] as int
-          : int.tryParse(data['opacidad'].toString()) ?? 0,
-      usuarioRef: data['usuario_ref'] as DocumentReference?,
+          : int.tryParse(data['opacidad']?.toString() ?? '0') ?? 0,
     );
   }
 }

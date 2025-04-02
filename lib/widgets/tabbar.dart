@@ -17,7 +17,7 @@ class _TabBarScreenState extends State<TabBarScreen> {
   final List<Widget> _screens = [
     Inicio(),
     const Personalizacion(),
-    const ConsumoScreen(),
+    ConsumoScreen(),
     const Perfil(),
   ];
 

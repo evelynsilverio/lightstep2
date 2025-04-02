@@ -7,14 +7,18 @@ environment:
   sdk: ^3.5.4
 
 dependencies:
-  animated_text_kit: ^4.2.3
   flutter:
     sdk: flutter
+  animated_text_kit: ^4.2.3
   flutter_svg: ^2.0.9
   lucide_icons: ^0.255.0
   flutter_colorpicker: ^1.1.0
+  pie_chart: ^5.0.0
   firebase_core: ^3.12.1
+  http: ^0.13.6
   cloud_firestore: ^5.6.5
+  firebase_database: ^11.3.4
+
 
 dev_dependencies:
   flutter_test:
@@ -29,4 +33,3 @@ flutter:
     - assets/img/descarga1.png
     - assets/img/desc.gif
     - assets/img/logo.svg
-

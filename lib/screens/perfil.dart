@@ -1,7 +1,7 @@
+import 'dart:convert'; // Para codificar datos JSON
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http; // Para solicitudes HTTP
 import 'package:ligth_step_app/widgets/appbar.dart';
-// import 'package:ligthstep/widgets/appbar.dart';
-// import 'package:ligthstep/widgets/tabbar.dart'; // Esto ya no se necesita si lo simplificamos
 import '../widgets/scaffold_con_degradado.dart';
 
 class MainApp extends StatelessWidget {
@@ -25,20 +25,51 @@ class Perfil extends StatefulWidget {
 
 class _PerfilState extends State<Perfil> {
   int _selectedIndex = 0;
-
-  // Define your screens here, just like you had it in TabBarScreen
-  final List<Widget> _screens = [
-    const Center(child: Text('Inicio', style: TextStyle(fontSize: 24))),
-    const Center(
-        child: Text('Personalización', style: TextStyle(fontSize: 24))),
-    const Center(child: Text('Consumo', style: TextStyle(fontSize: 24))),
-    const Center(child: Text('Perfil', style: TextStyle(fontSize: 24))),
-  ];
+  final TextEditingController _feedbackController = TextEditingController(); // Controlador para comentarios
+  final String formspreeURL = "https://formspree.io/f/xpwpywyq"; // Reemplaza con tu URL de Formspree
 
   void _onTabSelected(int index) {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  // Método para enviar comentarios por correo usando Formspree
+  Future<void> _sendFeedback() async {
+    final feedback = _feedbackController.text.trim();
+    if (feedback.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Por favor escribe un comentario")),
+      );
+      return;
+    }
+
+    try {
+      // Realiza la solicitud POST a Formspree
+      final response = await http.post(
+        Uri.parse(formspreeURL),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "email": "usuario@ejemplo.com", // Cambia esto si quieres un campo dinámico
+          "message": feedback,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Comentario enviado con éxito")),
+        );
+        _feedbackController.clear();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error al enviar el comentario: ${response.body}")),
+        );
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Error de conexión al enviar el comentario")),
+      );
+    }
   }
 
   @override
@@ -48,36 +79,109 @@ class _PerfilState extends State<Perfil> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 20),
             const CircleAvatar(
-              radius: 50,
-              backgroundColor: Color.fromARGB(142, 121, 119, 119),
-              child: Icon(Icons.person, size: 50, color: Colors.white),
+              radius: 70,
+              backgroundColor: Color.fromARGB(88, 191, 189, 189),
+              child: Icon(Icons.person, size: 80, color: Colors.white),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
             const Text(
               "Kevin Arroyo",
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 20,
+                fontSize: 28,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 20),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: _buildSectionTitle("Tus configuraciones favoritas"),
+            const SizedBox(height: 10),
+            const Text(
+              "@kevin_arroyo",
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: 18,
+                fontStyle: FontStyle.italic,
+              ),
             ),
-            _buildConfigBox(),
+            const SizedBox(height: 30),
+            // Información del perfil con título estilo degradado
+            _buildSectionTitle("Información del perfil"),
             const SizedBox(height: 20),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: _buildSectionTitle("Centro de ayuda"),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                children: [
+                  _buildInfoRow(Icons.location_on, "Ubicación", "México"),
+                  const SizedBox(height: 10),
+                  _buildInfoRow(Icons.work, "Ocupación", "UI/UX Designer"),
+                  const SizedBox(height: 10),
+                  _buildInfoRow(Icons.email, "Usuario", "kevin_arroyo"),
+                ],
+              ),
             ),
-            _buildHelpBox(),
-            const SizedBox(height: 40),
+            const SizedBox(height: 20),
+            // Centro de ayuda con título estilo degradado
+            _buildSectionTitle("Centro de ayuda"),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                children: [
+                  const Text(
+                    "Escríbenos tu comentario o pregunta...",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: _feedbackController,
+                    maxLines: 3,
+                    decoration: InputDecoration(
+                      hintText: "Escribe aquí...",
+                      hintStyle: const TextStyle(color: Colors.white54),
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.2),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  const SizedBox(height: 10),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: ElevatedButton(
+                      onPressed: _sendFeedback,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        backgroundColor: const Color.fromARGB(255, 173, 6, 179),
+                      ),
+                      child: const Text(
+                        "Enviar",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 30),
           ],
         ),
       ),
@@ -89,7 +193,7 @@ class _PerfilState extends State<Perfil> {
           onTap: _onTabSelected,
           backgroundColor: Colors.black,
           selectedItemColor: Colors.purpleAccent,
-          unselectedItemColor: Color.fromARGB(255, 159, 156, 156),
+          unselectedItemColor: const Color.fromARGB(255, 159, 156, 156),
           showUnselectedLabels: true,
           items: const [
             BottomNavigationBarItem(
@@ -115,23 +219,44 @@ class _PerfilState extends State<Perfil> {
   }
 
   Widget _buildSectionTitle(String title) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.pinkAccent, Colors.purple],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(3),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.pinkAccent, Colors.purple],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 90, 8, 88),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
         ),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      padding: EdgeInsets.all(3),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-        decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 90, 8, 88),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(
+      ],
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String title, String value) {
+    return Row(
+      children: [
+        Icon(icon, color: Colors.purpleAccent, size: 24),
+        const SizedBox(width: 10),
+        Text(
           title,
           style: const TextStyle(
             color: Colors.white,
@@ -139,115 +264,15 @@ class _PerfilState extends State<Perfil> {
             fontWeight: FontWeight.bold,
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildConfigBox() {
-    return Container(
-      margin: const EdgeInsets.only(top: 10),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("Colores",
-              style: TextStyle(color: Colors.white, fontSize: 14)),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              _buildColorBox(const Color.fromARGB(255, 35, 8, 144)),
-              _buildColorBox(const Color.fromARGB(255, 245, 4, 193)),
-              _buildColorBox(const Color.fromARGB(255, 196, 200, 7)),
-            ],
+        const Spacer(),
+        Text(
+          value,
+          style: const TextStyle(
+            color: Colors.white70,
+            fontSize: 16,
           ),
-          const SizedBox(height: 10),
-          const Text("Efectos",
-              style: TextStyle(color: Colors.white, fontSize: 14)),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: Colors.purpleAccent,
-            ),
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.waves, color: Colors.white),
-                SizedBox(width: 8),
-                Text("Arco iris", style: TextStyle(color: Colors.white)),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildColorBox(Color color) {
-    return Container(
-      width: 35,
-      height: 35,
-      margin: const EdgeInsets.only(right: 15),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(6),
-      ),
-    );
-  }
-
-  Widget _buildHelpBox() {
-    return Container(
-      margin: const EdgeInsets.only(top: 10),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(132, 255, 255, 255).withOpacity(0.2),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "Escríbenos o haznos una pregunta...",
-            style: TextStyle(color: Colors.white, fontSize: 14),
-          ),
-          const SizedBox(height: 10),
-          TextField(
-            maxLines: 3,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor:
-                  const Color.fromARGB(131, 255, 255, 255).withOpacity(0.1),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide.none,
-              ),
-            ),
-            style: const TextStyle(color: Colors.white),
-          ),
-          const SizedBox(height: 10),
-          Align(
-            alignment: Alignment.centerRight,
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                backgroundColor: Colors.purpleAccent,
-              ),
-              child:
-                  const Text("Enviar", style: TextStyle(color: Colors.white)),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

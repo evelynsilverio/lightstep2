@@ -12,7 +12,20 @@
           "package_name": "com.example.light_step_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "373124875789-d6utgcf54n4no1oloi1qqj0qq9kei5uc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.light_step_app",
+            "certificate_hash": "39ee4ade68c0826a51378f26589f2c88b8c05c57"
+          }
+        },
+        {
+          "client_id": "373124875789-upmr749fdmdrukmvhubmrlifvormuflt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyB7S8uvR5J0cacYUepB36o9Znmca4SQdWA"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "373124875789-upmr749fdmdrukmvhubmrlifvormuflt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

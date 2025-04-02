@@ -5,6 +5,7 @@ import 'package:ligth_step_app/screens/iniciar_sesion.dart';
 import 'package:ligth_step_app/screens/perfil.dart';
 import 'package:ligth_step_app/screens/personalizacion.dart';
 import 'package:ligth_step_app/services/lightstep_service.dart';
+import 'package:ligth_step_app/services/lightstep_step.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,12 +14,12 @@ void main() async {
   print('Firebase inicializado correctamente');
 
   LightstepService service = LightstepService();
-  
+
   // MANDAR A LLAMAR LOS SERVICIOS
   // SIRVE PARA CONFIGURACIÓN
-  service.getConfiguracion('configuracion').listen((configuracion) {
-    print('Recibidas ${configuracion.length} configuraciones');
-  });
+  // service.getConfiguracion('configuracion').listen((configuracion) {
+  //   print('Recibidas ${configuracion.length} configuraciones');
+  // });
 
   runApp(const MyApp());
 }
@@ -38,7 +39,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const LoginScreen(),
         '/personalizacion': (context) => const Personalizacion(),
-        '/consumo': (context) => const ConsumoScreen(),
+        '/consumo': (context) => ConsumoScreen(),
         '/perfil': (context) => const Perfil(),
       },
     );
