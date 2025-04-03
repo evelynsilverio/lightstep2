@@ -22,11 +22,11 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
     const Color.fromARGB(255, 240, 123, 80),
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    _streamHoras = _service.getConsumoEnHoras();
-  }
+@override
+void initState() {
+  super.initState();
+  _streamHoras = _service.getConsumoAgrupadoPorDia();
+}
 
   @override
   Widget build(BuildContext context) {
@@ -36,17 +36,21 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
         child: StreamBuilder<Map<String, double>>(
           stream: _streamHoras,
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (snapshot.hasError) {
-              return const Center(child: Text("Error al cargar los datos"));
-            }
-            if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(child: Text("No hay datos disponibles"));
-            }
+  if (snapshot.connectionState == ConnectionState.waiting) {
+    return const Center(child: CircularProgressIndicator());
+  }
+  if (snapshot.hasError) {
+    return const Center(child: Text("Error al cargar los datos"));
+  }
+  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+    return const Center(child: Text("No hay datos disponibles"));
+  }
 
-            final dataMap = snapshot.data!;
+  final dataMap = snapshot.data!;
+  print("Datos agrupados que llegan al gráfico: $dataMap"); // Debug para confirmar datos
+
+
+
 
             return Padding(
               padding: const EdgeInsets.all(20.0),
@@ -66,20 +70,20 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
                             showChartValuesInPercentage: false,
                             decimalPlaces: 0,
                             chartValueStyle: TextStyle(
-                              color: Colors.white,
+                              color: Color.fromARGB(255, 0, 0, 0),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           legendOptions: const LegendOptions(showLegends: true),
                           chartType: ChartType.ring,
                           ringStrokeWidth: 32,
-                          chartRadius: MediaQuery.of(context).size.width / 2.5,
+                          chartRadius: MediaQuery.of(context).size.width / 2,
                         ),
                         const SizedBox(height: 30),
                         _buildLegend(dataMap),
                       ],
                     ),
-                  ),
+                  ),  
                 ],
               ),
             );
@@ -105,7 +109,7 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
                 onPressed: () {
                   Navigator.pushNamed(context, '/seccion1');
                 },
-                color: Colors.white,
+                color: const Color.fromARGB(255, 0, 0, 0),
               ),
             ],
           ),
@@ -178,7 +182,7 @@ class _ConsumoScreenState extends State<ConsumoScreen> {
                 ),
                 const SizedBox(width: 10),
                 Text(
-                  "Fecha: ${entry.key}, Horas: ${entry.value.toInt()}",
+                  "Fecha: ${entry.key}, Segundos: ${entry.value.toInt()}",
                   style: const TextStyle(color: Colors.white, fontSize: 15),
                 ),
               ],

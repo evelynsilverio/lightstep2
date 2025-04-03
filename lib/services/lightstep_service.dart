@@ -31,40 +31,34 @@ class LightstepService {
       return horasPorDia;
     });
   }
+ Stream<Map<String, double>> getConsumoAgrupadoPorDia() {
+  return _database.child("config").onValue.map((event) {
+    final snapshot = event.snapshot;
+    final data = snapshot.value as Map<dynamic, dynamic>? ?? {};
 
-  // Obtener las horas de consumo filtradas por día
-  Stream<Map<String, double>> getConsumoPorDia(DateTime dia) {
-    // Formatear la fecha para comparaciones, solo manteniendo YYYY-MM-DD
-    final String diaFiltrado =
-        "${dia.year}-${dia.month.toString().padLeft(2, '0')}-${dia.day.toString().padLeft(2, '0')}";
+    Map<String, double> consumoPorDia = {};
 
-    return _database.child("config").onValue.map((event) {
-      final snapshot = event.snapshot;
-      final data = snapshot.value as Map<dynamic, dynamic>? ?? {};
+    data.forEach((key, value) {
+      final item = value as Map<dynamic, dynamic>;
+      final estado = item["estado"] ?? "";
+      final fechaCompleta = item["fecha"] ?? "";
+      final horasUtilizadas = (item["opacidad"] as int?)?.toDouble() ?? 0.0;
 
-      Map<String, double> horasPorDia = {};
-
-      data.forEach((key, value) {
-        final item = value as Map<dynamic, dynamic>;
-        final estado = item["estado"] ?? "";
-        final fechaCompleta = item["fecha"] ?? "";
-        final horasUtilizadas = (item["opacidad"] as int?)?.toDouble() ?? 0.0;
-
+      if (estado == "activo") {
         // Convertir la fecha completa a solo YYYY-MM-DD
         DateTime fechaObjeto = DateTime.tryParse(fechaCompleta) ?? DateTime(2000);
         String fechaSoloDia =
             "${fechaObjeto.year}-${fechaObjeto.month.toString().padLeft(2, '0')}-${fechaObjeto.day.toString().padLeft(2, '0')}";
 
-        // Filtrar por el día específico
-        if (estado == "activo" && fechaSoloDia == diaFiltrado) {
-          horasPorDia[fechaSoloDia] = (horasPorDia[fechaSoloDia] ?? 0.0) + horasUtilizadas;
-        }
-      });
-
-      return horasPorDia;
+        // Agrupar las horas por día
+        consumoPorDia[fechaSoloDia] = (consumoPorDia[fechaSoloDia] ?? 0.0) + horasUtilizadas;
+      }
     });
-  }
 
+    print("Consumo agrupado por día: $consumoPorDia"); // Debug para verificar agrupación
+    return consumoPorDia;
+  });
+}
   // Actualizar la configuración en Realtime Database
   Future<void> updateConfiguracion({
     required String efecto,
